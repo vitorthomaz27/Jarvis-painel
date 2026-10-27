@@ -49,6 +49,12 @@ pnpm dev                                    # API em :3333 e painel em :3000
 
 Sem `SEED_ADMIN_PASSWORD` no `.env`, o seed gera uma senha e mostra no terminal. Troque em **Minha conta** no primeiro acesso.
 
+Para definir ou recuperar a senha a qualquer momento (com a API parada ou rodando):
+
+```bash
+pnpm --filter api admin:password jarvistecnologia01@gmail.com 'SuaSenhaForte123'
+```
+
 ## Testes
 
 ```bash
