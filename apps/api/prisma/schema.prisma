@@ -1,0 +1,130 @@
+// Painel Jarvis — modelo de dados
+// Multiempresa: cada Negocio (cliente da Jarvis) tem seus membros, leads e eventos.
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "client" // sem binário Rust: usa o adaptador pg (@prisma/adapter-pg)
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String
+  passwordHash String
+  isSuperAdmin Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  memberships  Membership[]
+  notes        Note[]
+}
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+model Business {
+  id             String       @id @default(cuid())
+  name           String
+  segment        String?
+  city           String?
+  whatsapp       String?      // só dígitos, com DDI (ex.: 5531998060020)
+  captureKey     String       @unique
+  allowedOrigins String[]     @default([])
+  createdAt      DateTime     @default(now())
+  members        Membership[]
+  leads          Lead[]
+  events         Event[]
+}
+
+model Membership {
+  userId     String
+  businessId String
+  role       Role     @default(MEMBER)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@id([userId, businessId])
+  @@index([businessId])
+}
+
+enum LeadStatus {
+  NOVO
+  CONVERSANDO
+  AGENDOU
+  CLIENTE
+  PERDIDO
+}
+
+enum LeadSource {
+  FORMULARIO
+  DIAGNOSTICO
+  MANUAL
+  OUTRO
+}
+
+model Lead {
+  id              String     @id @default(cuid())
+  businessId      String
+  name            String
+  phone           String?    // só dígitos, com DDI
+  email           String?
+  interest        String?    // "o que procura" / tipo de projeto
+  message         String?
+  status          LeadStatus @default(NOVO)
+  source          LeadSource @default(FORMULARIO)
+  page            String?
+  utmSource       String?
+  utmCampaign     String?
+  followUpAt      DateTime?  // lembrete de retorno
+  firstResponseAt DateTime?  // quando saiu de NOVO pela primeira vez
+  lastContactAt   DateTime   @default(now())
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  business        Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  notes           Note[]
+
+  @@index([businessId, status])
+  @@index([businessId, createdAt])
+  @@index([businessId, followUpAt])
+}
+
+enum NoteKind {
+  NOTA
+  STATUS
+  SISTEMA
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  leadId    String
+  authorId  String?
+  kind      NoteKind @default(NOTA)
+  body      String
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([leadId, createdAt])
+}
+
+enum EventType {
+  WHATSAPP_CLICK
+}
+
+model Event {
+  id         String    @id @default(cuid())
+  businessId String
+  type       EventType
+  location   String?
+  page       String?
+  createdAt  DateTime  @default(now())
+  business   Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, type, createdAt])
+}
