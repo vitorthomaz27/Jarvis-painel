@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { LeadSource, LeadStatus, Prisma } from '@prisma/client';
+import type { LeadSource, LeadStatus, Prisma } from '../prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { normalizePhone } from '../common/phone';
 import { daysAgo, endOfLocalDay, hoursAgo } from '../common/dates';

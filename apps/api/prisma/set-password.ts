@@ -2,7 +2,7 @@
  * Define a senha de um usuário. Se o e-mail não existir, cria como administrador da Jarvis.
  * Uso: pnpm --filter api admin:password <email> <nova-senha>
  */
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 

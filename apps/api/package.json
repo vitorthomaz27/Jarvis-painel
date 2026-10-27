@@ -10,6 +10,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
+    "prisma:vercel": "prisma generate && DATABASE_URL=${DATABASE_URL_UNPOOLED:-$DATABASE_URL} prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
     "admin:password": "tsx prisma/set-password.ts",
     "test:e2e": "jest --config jest.config.js --runInBand"

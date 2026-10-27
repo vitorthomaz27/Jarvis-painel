@@ -77,17 +77,31 @@ São 24 testes de ponta a ponta contra um Postgres real (`DATABASE_URL_TEST`, qu
 
 No site da Jarvis, o formulário de contato usa `f-nome`, `f-contato` e `f-negocio`, e a API já entende esses nomes. Basta chamar `window.JarvisPainel.lead(...)` junto do envio atual.
 
-## Colocar no ar
+## Colocar no ar (Vercel + Neon)
 
-A hospedagem compartilhada da Hostinger não roda Node. Use uma VPS (Hostinger VPS, por exemplo) ou um serviço como Railway ou Render. São três peças:
+São dois projetos na Vercel apontando para este mesmo repositório e um banco Postgres no Neon.
 
-| Peça | Comando | Variáveis |
-|---|---|---|
-| PostgreSQL 16 | — | — |
-| API | `pnpm --filter api build && pnpm --filter api prisma:deploy && pnpm --filter api start` | `DATABASE_URL`, `JWT_SECRET`, `PUBLIC_API_URL`, `PORT`, `NODE_ENV=production` |
-| Painel | `pnpm --filter web build && pnpm --filter web start` | `API_URL` (endereço interno da API), `NEXT_PUBLIC_API_PUBLIC_URL` (endereço público da API, usado no script) |
+**1. API**: Add New → Project → este repositório.
+- Root Directory: `apps/api` (o resto vem do `apps/api/vercel.json`)
+- Storage → Neon (Postgres): cria o banco e preenche `DATABASE_URL` e `DATABASE_URL_UNPOOLED`
+- Environment Variables: `JWT_SECRET` (frase longa e aleatória) e `PUBLIC_API_URL` (o endereço desta API, por exemplo `https://api.jarvistecnologia.com`)
+- Cada deploy roda `prisma migrate deploy` antes do build. A API inteira roda numa função (`api/index.js` → `dist/serverless.js`).
 
-Sugestão de domínios: `painel.jarvistecnologia.com` para o painel e `api.jarvistecnologia.com` para a API, os dois com HTTPS. Com `NODE_ENV=production`, o cookie de sessão sai com `Secure`.
+**2. Painel**: Add New → Project → o mesmo repositório.
+- Root Directory: `apps/web` (Next.js é detectado sozinho)
+- Environment Variables: `API_URL` e `NEXT_PUBLIC_API_PUBLIC_URL`, os dois com o endereço da API
+
+**3. Primeiro acesso**: do seu computador, apontando para o banco do Neon:
+
+```bash
+DATABASE_URL="<DATABASE_URL_UNPOOLED do Neon>" pnpm --filter api admin:password voce@email.com 'SenhaForte123'
+```
+
+**4. Domínios (opcional)**: em cada projeto, Settings → Domains (`painel.` e `api.jarvistecnologia.com`). No DNS da Hostinger, crie os CNAME que a Vercel mostrar.
+
+Observações:
+- O cliente Prisma é gerado em `apps/api/prisma/generated` (não versionado) para entrar no pacote da função.
+- O limite de tentativas de login fica na memória de cada instância da função, então numa função serverless é só uma proteção básica.
 
 ## Próximos passos
 

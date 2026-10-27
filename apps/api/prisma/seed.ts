@@ -2,7 +2,7 @@
  * Cria o acesso de administrador da Jarvis e um negócio de exemplo com leads fictícios.
  * Uso: pnpm db:seed  (lê SEED_ADMIN_* do .env; sem senha definida, gera uma e mostra no terminal)
  */
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';

@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import type { LeadSource } from '@prisma/client';
+import type { LeadSource } from '../prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { looksLikeEmail, normalizePhone } from '../common/phone';
 import { normalizeOrigin } from '../businesses/businesses.service';

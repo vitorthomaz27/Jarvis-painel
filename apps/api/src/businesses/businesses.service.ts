@@ -1,7 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcryptjs';
-import type { Role } from '@prisma/client';
+import type { Role } from '../prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { normalizePhone } from '../common/phone';
 import type { AuthUser } from '../common/auth.types';

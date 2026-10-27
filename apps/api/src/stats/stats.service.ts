@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { LeadStatus } from '@prisma/client';
+import type { LeadStatus } from '../prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LeadsService } from '../leads/leads.service';
 import { daysAgo, localDateKey, startOfLocalDay } from '../common/dates';

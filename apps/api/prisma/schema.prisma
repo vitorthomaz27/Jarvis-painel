@@ -4,6 +4,7 @@
 generator client {
   provider   = "prisma-client-js"
   engineType = "client" // sem binário Rust: usa o adaptador pg (@prisma/adapter-pg)
+  output     = "./generated" // dentro da API, para ir junto no pacote da Vercel
 }
 
 datasource db {
